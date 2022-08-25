@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeInsuranceEnum.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">restExemple</a> &gt; <a href="index.source.html" class="el_package">com.fourcamp.linkbank.enums</a> &gt; <span class="el_source">TypeInsuranceEnum.java</span></div><h1>TypeInsuranceEnum.java</h1><pre class="source lang-java linenums">package com.fourcamp.linkbank.enums;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+public enum TypeInsuranceEnum {
+<span class="nc" id="L8">    BASIC(&quot;BASIC&quot;),</span>
+<span class="nc" id="L9">    SUPER(&quot;SUPER&quot;),</span>
+<span class="nc" id="L10">    PREMIUM(&quot;PREMIUM&quot;);</span>
+
+
+    public String key;
+    public String getKey() {
+<span class="nc" id="L15">        return key;</span>
+    }
+    public void setKey(String key) {
+<span class="nc" id="L18">        this.key = key;</span>
+<span class="nc" id="L19">    }</span>
+<span class="nc" id="L20">    TypeInsuranceEnum(String key){</span>
+<span class="nc" id="L21">        this.key = key;</span>
+<span class="nc" id="L22">    }</span>
+<span class="nc" id="L23">    private static final Map&lt;String, TypeInsuranceEnum&gt; lookup = new HashMap&lt;String, TypeInsuranceEnum&gt;();</span>
+    static {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        for(TypeInsuranceEnum x : EnumSet.allOf(TypeInsuranceEnum.class))</span>
+<span class="nc" id="L26">            lookup.putIfAbsent(x.getKey(), x);</span>
+<span class="nc" id="L27">    }</span>
+    public static TypeInsuranceEnum get(String key) {
+<span class="nc" id="L29">        return lookup.get(key);</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

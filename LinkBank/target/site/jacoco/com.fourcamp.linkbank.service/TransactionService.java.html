@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">restExemple</a> &gt; <a href="index.source.html" class="el_package">com.fourcamp.linkbank.service</a> &gt; <span class="el_source">TransactionService.java</span></div><h1>TransactionService.java</h1><pre class="source lang-java linenums">package com.fourcamp.linkbank.service;
+
+import com.fourcamp.linkbank.enums.ExtractEnum;
+import com.fourcamp.linkbank.enums.ExtractTypeEnum;
+import com.fourcamp.linkbank.model.Account;
+import com.fourcamp.linkbank.model.Extract;
+import com.fourcamp.linkbank.model.TransactionPix;
+import com.fourcamp.linkbank.model.TransactionTransfer;
+import com.fourcamp.linkbank.repository.AccountRepository;
+import com.fourcamp.linkbank.repository.ExtractRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L17">public class TransactionService {</span>
+
+    @Autowired
+    ExtractRepository extractRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
+
+    public void insertTransactionTransfer(TransactionTransfer transaction){
+<span class="nc" id="L26">        Extract extract = new Extract();</span>
+
+<span class="nc" id="L28">        extract.setDescription(ExtractTypeEnum.TRANSFER.getKey() + &quot; para &quot; +</span>
+<span class="nc" id="L29">                transaction.getReceiverAccount().getClient().getFullname());</span>
+
+<span class="nc" id="L31">        extract.setValue(transaction.getValue());</span>
+<span class="nc" id="L32">        extract.setAccount_id(transaction.getId());</span>
+<span class="nc" id="L33">        extract.setType(ExtractEnum.PAID.getKey());</span>
+
+<span class="nc" id="L35">        extractRepository.save(extract);</span>
+<span class="nc" id="L36">    }</span>
+
+    public void insertTransactionPix(TransactionPix transaction){
+<span class="nc" id="L39">        Extract extract = new Extract();</span>
+
+<span class="nc" id="L41">        extract.setDescription(ExtractTypeEnum.PIX.getKey() + &quot; para &quot; +</span>
+<span class="nc" id="L42">                transaction.getPixKey());</span>
+
+<span class="nc" id="L44">        extract.setValue(transaction.getValue());</span>
+<span class="nc" id="L45">        extract.setAccount_id(transaction.getId());</span>
+<span class="nc" id="L46">        extract.setType(ExtractEnum.PAID.getKey());</span>
+
+<span class="nc" id="L48">        extractRepository.save(extract);</span>
+<span class="nc" id="L49">    }</span>
+
+    public void receiveTransactionTransfer(TransactionTransfer transactionTransfer){
+<span class="nc" id="L52">        Extract extract = new Extract();</span>
+
+<span class="nc" id="L54">        Optional&lt;Account&gt; account = accountRepository.findById(transactionTransfer.getId());</span>
+<span class="nc" id="L55">        Account payer = account.get();</span>
+
+<span class="nc" id="L57">        extract.setDescription(ExtractTypeEnum.TRANSFER.getKey() + &quot; recebida de &quot; + payer.getClient().getFullname());</span>
+<span class="nc" id="L58">        extract.setValue(transactionTransfer.getValue());</span>
+
+<span class="nc" id="L60">        Account receiver = accountRepository.findAccountByNumber(transactionTransfer.getReceiverAccount().getNumber());</span>
+
+<span class="nc" id="L62">        extract.setAccount_id(receiver.getId());</span>
+<span class="nc" id="L63">        extract.setType(ExtractEnum.RECIEVED.getKey());</span>
+
+<span class="nc" id="L65">        extractRepository.save(extract);</span>
+<span class="nc" id="L66">    }</span>
+
+    public void receiveTransactionPix(TransactionPix transactionPix, Account receiver){
+<span class="nc" id="L69">        Extract extract = new Extract();</span>
+
+<span class="nc" id="L71">        Optional&lt;Account&gt; account = accountRepository.findById(transactionPix.getId());</span>
+<span class="nc" id="L72">        Account payer = account.get();</span>
+
+<span class="nc" id="L74">        extract.setDescription(ExtractTypeEnum.PIX.getKey() + &quot; recebido de &quot; + payer.getClient().getFullname());</span>
+<span class="nc" id="L75">        extract.setValue(transactionPix.getValue());</span>
+
+<span class="nc" id="L77">        extract.setAccount_id(receiver.getId());</span>
+<span class="nc" id="L78">        extract.setType(ExtractEnum.RECIEVED.getKey());</span>
+
+<span class="nc" id="L80">        extractRepository.save(extract);</span>
+<span class="nc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

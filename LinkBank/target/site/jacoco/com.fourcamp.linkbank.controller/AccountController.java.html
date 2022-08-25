@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">restExemple</a> &gt; <a href="index.source.html" class="el_package">com.fourcamp.linkbank.controller</a> &gt; <span class="el_source">AccountController.java</span></div><h1>AccountController.java</h1><pre class="source lang-java linenums">package com.fourcamp.linkbank.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fourcamp.linkbank.model.Account;
+import com.fourcamp.linkbank.model.Extract;
+import com.fourcamp.linkbank.model.TransactionPix;
+import com.fourcamp.linkbank.model.TransactionTransfer;
+import com.fourcamp.linkbank.service.AccountService;
+import com.fourcamp.linkbank.service.ExtractService;
+
+import lombok.extern.slf4j.Slf4j;
+
+<span class="fc" id="L25">@Slf4j</span>
+@RestController
+@RequestMapping(value = &quot;account&quot;)
+<span class="fc" id="L28">public class AccountController {</span>
+
+	@Autowired
+	ExtractService extractService;
+
+	@Autowired
+	AccountService accountService;
+
+	@GetMapping(&quot;/balance&quot;)
+	public ResponseEntity&lt;?&gt; getBalance(@RequestBody Account account) {
+
+		try {
+<span class="nc bnc" id="L40" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L41">				return new ResponseEntity&lt;&gt;(&quot;ID da conta nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L43">		} catch (Exception e) {</span>
+<span class="nc" id="L44">			log.info(&quot;Erro ao recuperar saldo da conta: &quot;, e);</span>
+		}
+<span class="nc" id="L46">		return new ResponseEntity&lt;&gt;(accountService.getBalance(account.getId()), HttpStatus.OK);</span>
+
+	}
+
+	@GetMapping(&quot;/savingsbalance&quot;)
+	public ResponseEntity&lt;?&gt; getSavingsAccountBalance(@RequestBody Account account) {
+
+		try {
+<span class="nc bnc" id="L54" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L55">				return new ResponseEntity&lt;&gt;(&quot;ID da conta nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L57">		} catch (Exception e) {</span>
+<span class="nc" id="L58">			log.info(&quot;Erro ao recuperar saldo da conta poupança: &quot;, e);</span>
+		}
+<span class="nc" id="L60">		return new ResponseEntity&lt;&gt;(accountService.getSavingsAccountBalance(account.getId()), HttpStatus.OK);</span>
+
+	}
+
+	@PutMapping(&quot;/deposit&quot;)
+	public ResponseEntity&lt;?&gt; makeDeposit(@RequestBody Account account) {
+		try {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">			if (account.getNumber() == null || account.getBalance() == null) {</span>
+<span class="nc" id="L68">				return new ResponseEntity&lt;&gt;(&quot;Número da conta ou saldo da conta corrente nulo&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L70">		} catch (Exception e) {</span>
+<span class="nc" id="L71">			log.info(&quot;Erro ao realizar depósito na conta corrente: &quot;, e);</span>
+		}
+<span class="nc" id="L73">		return new ResponseEntity&lt;&gt;(accountService.deposit(account), HttpStatus.OK);</span>
+	}
+
+	@PutMapping(&quot;/depositinsavingsaccount&quot;)
+	public ResponseEntity&lt;?&gt; makeSavingsAccountDeposit(@RequestBody Account account) {
+		try {
+<span class="nc bnc" id="L79" title="All 4 branches missed.">			if (account.getNumber() == null || account.getSavingsAccountBalance() == null) {</span>
+<span class="nc" id="L80">				return new ResponseEntity&lt;&gt;(&quot;Número da conta ou saldo da conta poupança nulo&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L82">		} catch (Exception e) {</span>
+<span class="nc" id="L83">			log.info(&quot;Erro ao realizar depósito na conta poupança: &quot;, e);</span>
+		}
+<span class="nc" id="L85">		return new ResponseEntity&lt;&gt;(accountService.depositInSavingsAccount(account), HttpStatus.OK);</span>
+	}
+
+	@PutMapping(&quot;/transfer&quot;)
+	public ResponseEntity&lt;?&gt; makeTransfer(@RequestBody TransactionTransfer transactionTransfer) {
+		try {
+<span class="nc bnc" id="L91" title="All 4 branches missed.">			if (transactionTransfer.getId() == null || transactionTransfer.getValue() == null</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">					|| transactionTransfer.getReceiverAccount().getNumber() == null</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">					|| transactionTransfer.getReceiverAccount().getAgency() == null</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">					|| transactionTransfer.getReceiverAccount().getClient().getFullname() == null) {</span>
+<span class="nc" id="L95">				return new ResponseEntity&lt;&gt;(&quot;Dados da transferência nulos&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L97">		} catch (Exception e) {</span>
+<span class="nc" id="L98">			log.info(&quot;Erro ao realizar a transferência: &quot;, e);</span>
+		}
+<span class="nc" id="L100">		return new ResponseEntity&lt;&gt;(accountService.transfer(transactionTransfer), HttpStatus.OK);</span>
+	}
+
+	@PutMapping(&quot;/paybill&quot;)
+	public ResponseEntity&lt;?&gt; payBill(@RequestBody Account account) {
+		try {
+<span class="nc bnc" id="L106" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L107">				return new ResponseEntity&lt;&gt;(&quot;ID da conta nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L109">		} catch (Exception e) {</span>
+<span class="nc" id="L110">			log.info(&quot;Erro ao realizar o pagamento: &quot;, e);</span>
+		}
+<span class="nc" id="L112">		return new ResponseEntity&lt;&gt;(accountService.payBill(account), HttpStatus.OK);</span>
+	}
+
+	@GetMapping(&quot;/extract&quot;)
+	public ResponseEntity&lt;?&gt; getExtract(@RequestBody Account account) {
+		try {
+<span class="nc bnc" id="L118" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L119">				return new ResponseEntity&lt;&gt;(&quot;ID da conta nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L121">		} catch (Exception e) {</span>
+<span class="nc" id="L122">			log.info(&quot;Erro ao tentar retornar extrato: &quot;, e);</span>
+		}
+<span class="nc" id="L124">		return new ResponseEntity&lt;&gt;(extractService.listById(account.getId()), HttpStatus.OK);</span>
+	}
+
+	@PostMapping(&quot;/pix/email&quot;)
+	public ResponseEntity&lt;String&gt; pixEmail(@RequestBody TransactionPix transactionPix) {
+		try {
+<span class="nc bnc" id="L130" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getId() == 0) {</span>
+<span class="nc" id="L131">				return new ResponseEntity&lt;&gt;(&quot;ID da transação Pix nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L133">		} catch (Exception e) {</span>
+<span class="nc" id="L134">			log.info(&quot;Erro ao realizar a transação com chave Pix do tipo e-mail: &quot;, e);</span>
+		}
+<span class="nc" id="L136">		return new ResponseEntity&lt;&gt;(accountService.pixEmail(transactionPix), HttpStatus.OK);</span>
+	}
+
+	@PutMapping(&quot;/pix/email&quot;)
+	public ResponseEntity&lt;String&gt; transferPixEmail(@RequestBody TransactionPix transactionPix) {
+		try {
+<span class="nc bnc" id="L142" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getId() == 0) {</span>
+<span class="nc" id="L143">				return new ResponseEntity&lt;&gt;(&quot;ID da transação Pix nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L145">		} catch (Exception e) {</span>
+<span class="nc" id="L146">			log.info(&quot;Erro ao modificar chave Pix do tipo e-mail: &quot;, e);</span>
+		}
+<span class="nc" id="L148">		return new ResponseEntity&lt;&gt;(accountService.transferPixEmail(transactionPix), HttpStatus.OK);</span>
+	}
+
+	@DeleteMapping(&quot;/pix/email&quot;)
+	public ResponseEntity&lt;String&gt; pixEmail(@RequestBody Account account) {
+		try {
+<span class="nc bnc" id="L154" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L155">				return new ResponseEntity&lt;&gt;(&quot;ID da conta responsável pela chave Pix nulo ou zero&quot;,</span>
+<span class="nc" id="L156">						HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L158">		} catch (Exception e) {</span>
+<span class="nc" id="L159">			log.info(&quot;Erro ao deletar chave Pix do tipo e-mail: &quot;, e);</span>
+		}
+<span class="nc" id="L161">		return new ResponseEntity&lt;&gt;(accountService.deletePixEmail(account), HttpStatus.OK);</span>
+	}
+
+	@PostMapping(&quot;/pix/cpf&quot;)
+	public ResponseEntity&lt;String&gt; pixCpf(@RequestBody TransactionPix transactionPix) {
+		try {
+<span class="nc bnc" id="L167" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getId() == 0) {</span>
+<span class="nc" id="L168">				return new ResponseEntity&lt;&gt;(&quot;ID da transação Pix nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L170">		} catch (Exception e) {</span>
+<span class="nc" id="L171">			log.info(&quot;Erro ao realizar a transação com chave Pix do tipo CPF: &quot;, e);</span>
+		}
+<span class="nc" id="L173">		return new ResponseEntity&lt;&gt;(accountService.pixCpf(transactionPix), HttpStatus.OK);</span>
+	}
+
+	@PutMapping(&quot;/pix/cpf&quot;)
+	public ResponseEntity&lt;String&gt; transferPixCpf(@RequestBody TransactionPix transactionPix) {
+		try {
+<span class="nc bnc" id="L179" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getId() == 0) {</span>
+<span class="nc" id="L180">				return new ResponseEntity&lt;&gt;(&quot;ID da transação Pix nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L182">			return new ResponseEntity&lt;&gt;(accountService.transferPixCpf(transactionPix), HttpStatus.OK);</span>
+<span class="nc" id="L183">		} catch (Exception e) {</span>
+<span class="nc" id="L184">			log.info(&quot;Erro ao modificar chave Pix do tipo CPF: &quot;, e);</span>
+<span class="nc" id="L185">			return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+		}
+	}
+
+	@DeleteMapping(&quot;/pix/cpf&quot;)
+	public ResponseEntity&lt;String&gt; deletePixCpf(@RequestBody Account account) {
+		try {
+<span class="nc bnc" id="L192" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L193">				return new ResponseEntity&lt;&gt;(&quot;ID da conta responsável pela chave Pix nulo ou zero&quot;,</span>
+<span class="nc" id="L194">						HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L196">			return new ResponseEntity&lt;&gt;(accountService.deletePixCpf(account), HttpStatus.OK);</span>
+<span class="nc" id="L197">		} catch (Exception e) {</span>
+<span class="nc" id="L198">			log.info(&quot;Erro ao deletar chave Pix do tipo CPF: &quot;, e);</span>
+<span class="nc" id="L199">			return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+		}
+	}
+
+	@PostMapping(&quot;pix/cellphone&quot;)
+	public ResponseEntity&lt;String&gt; pixCellPhone(@RequestBody TransactionPix transactionPix) {
+
+		try {
+<span class="nc bnc" id="L207" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getId() == 0) {</span>
+<span class="nc" id="L208">				return new ResponseEntity&lt;&gt;(&quot;ID da transação Pix nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L210">			return new ResponseEntity&lt;&gt;(accountService.pixCellphone(transactionPix), HttpStatus.OK);</span>
+<span class="nc" id="L211">		} catch (Exception e) {</span>
+<span class="nc" id="L212">			log.info(&quot;Erro ao realizar a transação com chave Pix do tipo número de celular: &quot;, e);</span>
+<span class="nc" id="L213">			return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+		}
+	}
+
+	@PutMapping(&quot;/pix/cellphone&quot;)
+	public ResponseEntity&lt;String&gt; transferPixCellPhone(@RequestBody TransactionPix transactionPix) {
+
+		try {
+<span class="nc bnc" id="L221" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getId() == 0) {</span>
+<span class="nc" id="L222">				return new ResponseEntity&lt;&gt;(&quot;ID da transação Pix nulo ou zero&quot;, HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L224">			return new ResponseEntity&lt;&gt;(accountService.transferPixCellphone(transactionPix), HttpStatus.OK);</span>
+<span class="nc" id="L225">		} catch (Exception e) {</span>
+<span class="nc" id="L226">			log.info(&quot;Erro ao modificar chave Pix do tipo número de celular: &quot;, e);</span>
+<span class="nc" id="L227">			return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+		}
+	}
+
+	@DeleteMapping(&quot;/pix/cellphone&quot;)
+	public ResponseEntity&lt;String&gt; deletePixCellPhone(@RequestBody Account account) {
+
+		try {
+<span class="nc bnc" id="L235" title="All 4 branches missed.">			if (account.getId() == null || account.getId() == 0) {</span>
+<span class="nc" id="L236">				return new ResponseEntity&lt;&gt;(&quot;ID da conta responsável pela chave Pix nulo ou zero&quot;,</span>
+<span class="nc" id="L237">						HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L239">			return new ResponseEntity&lt;&gt;(accountService.deletePixCellPhone(account), HttpStatus.OK);</span>
+<span class="nc" id="L240">		} catch (Exception e) {</span>
+<span class="nc" id="L241">			log.info(&quot;Erro ao deletar chave Pix do tipo número de celular: &quot;, e);</span>
+<span class="nc" id="L242">			return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+		}
+	}
+
+	@PutMapping(&quot;/pix/cnpj&quot;)
+	public ResponseEntity&lt;String&gt; transferPixCnpj(@RequestBody TransactionPix transactionPix) {
+		try {
+<span class="nc bnc" id="L249" title="All 4 branches missed.">			if (transactionPix.getId() == null || transactionPix.getPixKey() == null</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">					|| transactionPix.getValue() == null) {</span>
+<span class="nc" id="L251">				return new ResponseEntity&lt;&gt;(&quot;ID da conta responsável pela chave Pix nulo ou dados do Pix nulos.&quot;,</span>
+<span class="nc" id="L252">						HttpStatus.BAD_REQUEST);</span>
+			}
+<span class="nc" id="L254">			return new ResponseEntity&lt;&gt;(accountService.transferPixCnpj(transactionPix), HttpStatus.OK);</span>
+<span class="nc" id="L255">		} catch (Exception e) {</span>
+<span class="nc" id="L256">			log.info(&quot;Erro ao realizar transação Pix do tipo CNPJ&quot;, e);</span>
+<span class="nc" id="L257">			return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

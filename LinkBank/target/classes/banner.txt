@@ -1,0 +1,23 @@
+ __         __     __   __     __  __     ______     ______     __   __     __  __
+/\ \       /\ \   /\ "-.\ \   /\ \/ /    /\  == \   /\  __ \   /\ "-.\ \   /\ \/ /
+\ \ \____  \ \ \  \ \ \-.  \  \ \  _"-.  \ \  __<   \ \  __ \  \ \ \-.  \  \ \  _"-.
+ \ \_____\  \ \_\  \ \_\\"\_\  \ \_\ \_\  \ \_____\  \ \_\ \_\  \ \_\\"\_\  \ \_\ \_\
+  \/_____/   \/_/   \/_/ \/_/   \/_/\/_/   \/_____/   \/_/\/_/   \/_/ \/_/   \/_/\/_/
+
+
+   TIME 2: \o/
+   --> Bruna de Almeida
+   --> Emanuela Machado
+   --> Gabriel Pinto
+   --> Julio Cezar
+   --> Lucas Camargo
+   --> Lucas Egito
+   --> Marcela Pazeli
+   --> Pedro Augusto
+   --> Pedro Zavelinske
+   --> Vanderson Santos
+
+
+
+${application.title} ${application.version}
+Powered by Spring Boot ${spring-boot.version}

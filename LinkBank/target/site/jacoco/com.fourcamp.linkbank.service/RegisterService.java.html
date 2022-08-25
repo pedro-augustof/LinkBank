@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RegisterService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">restExemple</a> &gt; <a href="index.source.html" class="el_package">com.fourcamp.linkbank.service</a> &gt; <span class="el_source">RegisterService.java</span></div><h1>RegisterService.java</h1><pre class="source lang-java linenums">package com.fourcamp.linkbank.service;
+
+import com.fourcamp.linkbank.model.Account;
+import com.fourcamp.linkbank.model.Card;
+import com.fourcamp.linkbank.model.Client;
+import com.fourcamp.linkbank.model.Pix;
+import com.fourcamp.linkbank.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.Random;
+
+@Service
+<span class="fc" id="L16">public class RegisterService {</span>
+
+	@Autowired
+	AccountRepository accountRepository;
+
+	@Autowired
+	ClientRepository clientRepository;
+
+	@Autowired
+	CardRepository cardRepository;
+
+	@Autowired
+	AddressRepository addressRepository;
+
+	@Autowired
+	CardService cardService;
+
+	@Autowired
+	PixRepository pixRepository;
+
+	public String register(Client client) {
+<span class="nc" id="L37">		LocalDate localDate = LocalDate.now();</span>
+<span class="nc" id="L38">		Account account = new Account();</span>
+<span class="nc" id="L39">		String number = createDigit(5) + &quot;-&quot; + createDigit(1);</span>
+
+		try {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">			if (clientRepository.findClientByCpf(client.getCpf()) != null) {</span>
+<span class="nc" id="L43">				return &quot;Cliente já cadastrado!&quot;;</span>
+			}
+<span class="nc" id="L45">		} catch (NullPointerException e) {</span>
+
+		}
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (client.getPassword().length() &lt; 8) {</span>
+<span class="nc" id="L50">			return &quot;Senha inválida!&quot;;</span>
+		}
+
+<span class="nc" id="L53">		account.setClient(client);</span>
+<span class="nc" id="L54">		account.setNumber(number);</span>
+<span class="nc" id="L55">		account.setAgency(&quot;0001&quot;);</span>
+<span class="nc" id="L56">		account.setBalance(0.0);</span>
+<span class="nc" id="L57">		account.setData(localDate);</span>
+
+<span class="nc" id="L59">		addressRepository.save(client.getAddress());</span>
+<span class="nc" id="L60">		clientRepository.save(client);</span>
+<span class="nc" id="L61">		Card card = cardService.createCard(account);</span>
+<span class="nc" id="L62">		account.setCard(card);</span>
+<span class="nc" id="L63">		account.setPix(new Pix());</span>
+<span class="nc" id="L64">		account.setData(localDate);</span>
+<span class="nc" id="L65">		account.setSavingsAccountRate(0.00035);</span>
+<span class="nc" id="L66">		account.setBalance(0.00);</span>
+<span class="nc" id="L67">		account.setSavingsAccountBalance(0.00);</span>
+
+<span class="nc" id="L69">		pixRepository.save(account.getPix());</span>
+<span class="nc" id="L70">		accountRepository.save(account);</span>
+
+<span class="nc" id="L72">		return &quot;Conta criada com sucesso!&quot;;</span>
+	}
+
+	public String update(Client client) {
+
+<span class="nc bnc" id="L77" title="All 2 branches missed.">		if (client.getPassword().length() &lt; 8) {</span>
+<span class="nc" id="L78">			return &quot;Senha inválida!&quot;;</span>
+		}
+<span class="nc" id="L80">		Client existClient = clientRepository.findClientByCpf(client.getCpf());</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">		if (!Objects.equals(existClient.getRg(), client.getRg())) {</span>
+<span class="nc" id="L82">			return &quot;Dados inválidos&quot;;</span>
+		}
+		try {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">			if (existClient == null) {</span>
+<span class="nc" id="L86">				return &quot;Cliente não cadastrado&quot;;</span>
+			}
+<span class="nc" id="L88">		} catch (NullPointerException e) {</span>
+<span class="nc" id="L89">			return &quot;Cliente não cadastrado&quot;;</span>
+		}
+
+<span class="nc" id="L92">		client.setClient_id(existClient.getClient_id());</span>
+
+<span class="nc" id="L94">		addressRepository.save(client.getAddress());</span>
+<span class="nc" id="L95">		clientRepository.save(client);</span>
+<span class="nc" id="L96">		return &quot;Dados atualizados com sucesso!&quot;;</span>
+	}
+
+	public String createDigit(int quantity) {
+<span class="nc" id="L100">		String digits = &quot;&quot;;</span>
+
+<span class="nc" id="L102">		Random random = new Random();</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">		for (int x = 0; x &lt; quantity; x++) {</span>
+<span class="nc" id="L104">			Integer number = random.nextInt(0, 10);</span>
+<span class="nc" id="L105">			digits += number.toString();</span>
+
+		}
+<span class="nc" id="L108">		return digits;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

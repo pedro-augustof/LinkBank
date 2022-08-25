@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">restExemple</a> &gt; <a href="index.source.html" class="el_package">com.fourcamp.linkbank.controller</a> &gt; <span class="el_source">LoginController.java</span></div><h1>LoginController.java</h1><pre class="source lang-java linenums">package com.fourcamp.linkbank.controller;
+
+import com.fourcamp.linkbank.exceptions.InvalidInputException;
+import com.fourcamp.linkbank.model.Account;
+import com.fourcamp.linkbank.model.Login;
+import com.fourcamp.linkbank.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+<span class="fc" id="L13">public class LoginController {</span>
+
+    @Autowired
+    AccountService accountService;
+
+
+    @PostMapping(&quot;/login&quot;)
+    @ResponseBody
+    public ResponseEntity&lt;Account&gt; login (@RequestBody Login login){
+        try {
+<span class="nc bnc" id="L23" title="All 4 branches missed.">            if (login.getCpf() == null || login.getPassword() == null){</span>
+<span class="nc" id="L24">                throw new InvalidInputException(&quot;CPF e senha faltando&quot;);</span>
+            }
+<span class="nc" id="L26">        } catch (NullPointerException e){</span>
+<span class="nc" id="L27">            throw new InvalidInputException(&quot;CPF e senha faltando&quot;);</span>
+        }
+<span class="nc" id="L29">        return  new ResponseEntity(accountService.login(login), HttpStatus.OK);</span>
+    }
+
+    @PutMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;Account&gt; resetPassword (@RequestBody Login login){
+        try {
+<span class="nc bnc" id="L35" title="All 4 branches missed.">            if (login.getCpf() == null || login.getPassword() == null){</span>
+<span class="nc" id="L36">                throw new InvalidInputException(&quot;CPF e senha faltando&quot;);</span>
+            }
+<span class="nc" id="L38">        } catch (NullPointerException e){</span>
+<span class="nc" id="L39">            throw new InvalidInputException(&quot;CPF e senha faltando&quot;);</span>
+        }
+<span class="nc" id="L41">        return new ResponseEntity(accountService.loginresetpassword(login), HttpStatus.OK);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

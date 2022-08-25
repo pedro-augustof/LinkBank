@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CardService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">restExemple</a> &gt; <a href="index.source.html" class="el_package">com.fourcamp.linkbank.service</a> &gt; <span class="el_source">CardService.java</span></div><h1>CardService.java</h1><pre class="source lang-java linenums">package com.fourcamp.linkbank.service;
+
+import com.fourcamp.linkbank.enums.TypeClientEnum;
+import com.fourcamp.linkbank.enums.TypeInsuranceEnum;
+import com.fourcamp.linkbank.exceptions.AccountNotFoundException;
+import com.fourcamp.linkbank.exceptions.CardNotFoundException;
+import com.fourcamp.linkbank.model.*;
+import com.fourcamp.linkbank.repository.AccountRepository;
+import com.fourcamp.linkbank.repository.CardRepository;
+import com.fourcamp.linkbank.repository.InsuranceRepository;
+import com.fourcamp.linkbank.repository.PolicyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+
+@Service
+<span class="fc" id="L20">public class CardService {</span>
+
+
+    @Autowired
+    CardRepository cardRepository;
+
+    @Autowired
+    PolicyRepository policyRepository;
+
+    @Autowired
+    InsuranceRepository insuranceRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
+
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    ExtractService extractService;
+
+    public Boolean block(Card card) {
+<span class="fc" id="L42">        Boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (!verify) {</span>
+<span class="nc" id="L44">            throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        } else {
+<span class="fc" id="L46">            Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">            if (!card1.getActive()) {</span>
+<span class="nc" id="L48">                return false;</span>
+            } else {
+<span class="fc" id="L50">                card1.setActive(false);</span>
+<span class="fc" id="L51">                cardRepository.save(card1);</span>
+<span class="fc" id="L52">                return true;</span>
+            }
+        }
+    }
+
+    public Boolean unblock(Card card) {
+<span class="nc" id="L58">        boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (!verify) {</span>
+<span class="nc" id="L60">            throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        } else {
+<span class="nc" id="L62">            Card card1 = (Card) cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            if (card1.getActive()) {</span>
+<span class="nc" id="L64">                return true;</span>
+            } else {
+<span class="nc" id="L66">                card1.setActive(true);</span>
+<span class="nc" id="L67">                cardRepository.save(card1);</span>
+<span class="nc" id="L68">                return false;</span>
+            }
+        }
+
+    }
+
+
+    public boolean changePassword(Card card, Integer newPassword) {
+<span class="nc" id="L76">        boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (!verify) {</span>
+<span class="nc" id="L78">            throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        } else {
+<span class="nc" id="L80">            Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (Objects.equals(newPassword, card1.getPassword())) {</span>
+<span class="nc" id="L82">                return false;</span>
+            } else {
+<span class="nc" id="L84">                card1.setPassword(newPassword);</span>
+<span class="nc" id="L85">                cardRepository.save(card1);</span>
+<span class="nc" id="L86">                return true;</span>
+            }
+        }
+    }
+
+
+    public Object getBill(Card card) {
+<span class="nc" id="L93">        Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if(card1 == null){</span>
+<span class="nc" id="L95">           throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        }
+<span class="nc" id="L97">        return card1.getMonthlyBill();</span>
+    }
+
+
+    public String createDigit(int quantity) {
+<span class="nc" id="L102">        String digits = &quot;&quot;;</span>
+
+<span class="nc" id="L104">        Random random = new Random();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        for (int x = 0; x &lt; quantity; x++) {</span>
+<span class="nc" id="L106">            int number = random.nextInt(0, 10);</span>
+<span class="nc" id="L107">            digits += Integer.toString(number);</span>
+
+        }
+<span class="nc" id="L110">        return digits;</span>
+    }
+
+    public Card createCard(Account account) {
+<span class="nc" id="L114">        Card card = new Card();</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (account.getClient().getIncome() &lt;= 2000) {</span>
+<span class="nc" id="L116">            card.setCardType(TypeClientEnum.BASIC.getKey());</span>
+<span class="nc" id="L117">            card.setMonthlyLimit(1500.00);</span>
+<span class="nc" id="L118">            card.setDailyLimit(5000.00);</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">        } else if (account.getClient().getIncome() &lt;= 5000 &amp;&amp; account.getClient().getIncome() &gt;= 2001) {</span>
+<span class="nc" id="L120">            card.setCardType(TypeClientEnum.SUPER.getKey());</span>
+<span class="nc" id="L121">            card.setMonthlyLimit(3000.00);</span>
+<span class="nc" id="L122">            card.setDailyLimit(10000.00);</span>
+<span class="nc" id="L123">        } else {</span>
+<span class="nc" id="L124">            card.setCardType(TypeClientEnum.PREMIUM.getKey());</span>
+<span class="nc" id="L125">            card.setMonthlyLimit(6000.00);</span>
+<span class="nc" id="L126">            card.setDailyLimit(20000.00);</span>
+        }
+<span class="nc" id="L128">        String cardNumber = createDigit(4) + &quot; &quot; + createDigit(4) + &quot; &quot; + createDigit(4) + &quot; &quot; + createDigit(4);</span>
+<span class="nc" id="L129">        card.setNumber(cardNumber);</span>
+<span class="nc" id="L130">        Integer cvv = Integer.valueOf(createDigit(3));</span>
+<span class="nc" id="L131">        card.setCvv(cvv);</span>
+<span class="nc" id="L132">        String flag = &quot;MASTERCARD&quot;;</span>
+<span class="nc" id="L133">        card.setFlag(flag);</span>
+<span class="nc" id="L134">        card.setActive(true);</span>
+<span class="nc" id="L135">        card.setMonthlyBill(0.00);</span>
+
+<span class="nc" id="L137">        cardRepository.save(card);</span>
+<span class="nc" id="L138">        return card;</span>
+    }
+
+    public Boolean adjustCreditLimit(Card card, Double newLimit) {
+<span class="nc" id="L142">        boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (!verify) {</span>
+<span class="nc" id="L144">            throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        } else {
+<span class="nc" id="L146">            Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L147">            double baseLimit = 0;</span>
+
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            if (Objects.equals(card1.getCardType(), &quot;PREMIUM&quot;)) {</span>
+<span class="nc" id="L150">                baseLimit = 6000.00;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">            } else if(Objects.equals(card1.getCardType(), &quot;SUPER&quot;)){</span>
+<span class="nc" id="L152">                baseLimit = 3000.00;</span>
+<span class="nc" id="L153">            } else {</span>
+<span class="nc" id="L154">                baseLimit = 1500.00;</span>
+            }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            if (newLimit &gt; baseLimit) {</span>
+<span class="nc" id="L157">                return false;</span>
+            } else {
+<span class="nc" id="L159">                card1.setMonthlyLimit(newLimit);</span>
+<span class="nc" id="L160">                cardRepository.save(card1);</span>
+<span class="nc" id="L161">                return true;</span>
+            }
+        }
+    }
+
+
+
+        public Boolean adjustDebitLimit (Card card, Double newLimit){
+<span class="nc" id="L169">            boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">            if (!verify) {</span>
+<span class="nc" id="L171">                throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+            } else {
+<span class="nc" id="L173">                Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L174">                    card1.setDailyLimit(newLimit);</span>
+<span class="nc" id="L175">                    cardRepository.save(card1);</span>
+<span class="nc" id="L176">                    return true;</span>
+
+            }
+        }
+
+    public boolean createInsurance(Card card) {
+<span class="nc" id="L182">        Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L183">        boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="nc" id="L184">        Policy policy = policyRepository.findPolicyByCard(card1);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (policy != null) {</span>
+<span class="nc" id="L186">            return false;</span>
+        } else {
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            if (!verify) {</span>
+<span class="nc" id="L189">                throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+            } else {
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">                if (Objects.equals(card1.getCardType(), &quot;BASIC&quot;)) {</span>
+<span class="nc" id="L193">                    createBasicInsurance(card1);</span>
+<span class="nc" id="L194">                    return true;</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                } else if (Objects.equals(card.getCardType(), &quot;SUPER&quot;)) {</span>
+<span class="nc" id="L196">                    createSuperInsurance(card1);</span>
+<span class="nc" id="L197">                    return true;</span>
+                } else {
+<span class="nc" id="L199">                    createPremiumInsurance(card1);</span>
+<span class="nc" id="L200">                    return true;</span>
+                }
+            }
+        }
+    }
+
+
+    public void createBasicInsurance(Card card){
+<span class="nc" id="L208">        Insurance insurance = new Insurance();</span>
+<span class="nc" id="L209">        insurance.setName(TypeInsuranceEnum.BASIC.getKey());</span>
+<span class="nc" id="L210">        insurance.setRules(&quot;TER NO MINIMO UMA CONTA DO TIPO BASIC NO LINKBANK&quot;);</span>
+<span class="nc" id="L211">        insuranceRepository.save(insurance);</span>
+<span class="nc" id="L212">        Policy policy = new Policy();</span>
+<span class="nc" id="L213">        policy.setCard(card);</span>
+<span class="nc" id="L214">        String policyNumber = createDigit(8);</span>
+<span class="nc" id="L215">        policy.setPolicyNumber(policyNumber);</span>
+<span class="nc" id="L216">        Double policyCost = 20.00;</span>
+<span class="nc" id="L217">        policy.setPolicyCost(policyCost);</span>
+<span class="nc" id="L218">        policy.setInsurance(insurance);</span>
+<span class="nc" id="L219">        policy.setConditions(&quot;cobre apenas roubo/furto&quot;);</span>
+<span class="nc" id="L220">        policy.setPolicyValue(3000.00);</span>
+<span class="nc" id="L221">        policyRepository.save(policy);</span>
+<span class="nc" id="L222">    }</span>
+
+    public void createSuperInsurance(Card card){
+<span class="nc" id="L225">        Insurance insurance = new Insurance();</span>
+<span class="nc" id="L226">        insurance.setName(TypeInsuranceEnum.SUPER.getKey());</span>
+<span class="nc" id="L227">        insurance.setRules(&quot;TER NO MINIMO UMA CONTA DO TIPO SUPER NO LINKBANK&quot;);</span>
+<span class="nc" id="L228">        insuranceRepository.save(insurance);</span>
+<span class="nc" id="L229">        Policy policy = new Policy();</span>
+<span class="nc" id="L230">        policy.setCard(card);</span>
+<span class="nc" id="L231">        String policyNumber = createDigit(8);</span>
+<span class="nc" id="L232">        policy.setPolicyNumber(policyNumber);</span>
+<span class="nc" id="L233">        Double policyCost = 40.00;</span>
+<span class="nc" id="L234">        policy.setPolicyCost(policyCost);</span>
+<span class="nc" id="L235">        policy.setInsurance(insurance);</span>
+<span class="nc" id="L236">        policy.setConditions(&quot;cobre roubo/furto e perda&quot;);</span>
+<span class="nc" id="L237">        policy.setPolicyValue(8000.00);</span>
+<span class="nc" id="L238">        policyRepository.save(policy);</span>
+<span class="nc" id="L239">    }</span>
+
+    public void createPremiumInsurance(Card card){
+<span class="nc" id="L242">        Insurance insurance = new Insurance();</span>
+<span class="nc" id="L243">        insurance.setName(TypeInsuranceEnum.PREMIUM.getKey());</span>
+<span class="nc" id="L244">        insurance.setRules(&quot;TER UMA CONTA DO TIPO PREMIUM NO LINKBANK&quot;);</span>
+<span class="nc" id="L245">        insuranceRepository.save(insurance);</span>
+<span class="nc" id="L246">        Policy policy = new Policy();</span>
+<span class="nc" id="L247">        policy.setCard(card);</span>
+<span class="nc" id="L248">        String policyNumber = createDigit(8);</span>
+<span class="nc" id="L249">        policy.setPolicyNumber(policyNumber);</span>
+<span class="nc" id="L250">        Double policyCost = 60.00;</span>
+<span class="nc" id="L251">        policy.setPolicyCost(policyCost);</span>
+<span class="nc" id="L252">        policy.setInsurance(insurance);</span>
+<span class="nc" id="L253">        policy.setConditions(&quot;cobre roubo/furto, perda e invalidez total/morte por acidente&quot;);</span>
+<span class="nc" id="L254">        policy.setPolicyValue(13000.00);</span>
+<span class="nc" id="L255">        policyRepository.save(policy);</span>
+<span class="nc" id="L256">    }</span>
+
+
+
+    public String deleteInsurance(Card card) {
+<span class="nc" id="L261">        Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L262">        Policy policy = policyRepository.findPolicyByCard(card1);</span>
+        try{
+<span class="nc bnc" id="L264" title="All 2 branches missed.">           if(policy.getPolicyNumber()  == null) {</span>
+<span class="nc" id="L265">               return &quot;Não foi possível cancelar o seguro&quot;;</span>
+           }
+<span class="nc" id="L267">        }catch (NullPointerException e){</span>
+<span class="nc" id="L268">            return &quot;Não foi possível cancelar o seguro&quot;;</span>
+        }
+<span class="nc" id="L270">        Optional&lt;Insurance&gt; optInsurance = insuranceRepository.findById(policy.getInsurance().getInsurance_id());</span>
+<span class="nc" id="L271">        Insurance insurance = optInsurance.get();</span>
+<span class="nc" id="L272">        policyRepository.delete(policy);</span>
+<span class="nc" id="L273">        insuranceRepository.delete(insurance);</span>
+
+<span class="nc" id="L275">        return &quot;Seguro cancelado com sucesso&quot;;</span>
+    }
+
+    public Object getInsurance(Card card) {
+<span class="nc" id="L279">        boolean verify = cardRepository.existsByNumber(card.getNumber());</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">        if (!verify) {</span>
+<span class="nc" id="L281">            throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        } else {
+<span class="nc" id="L283">            Policy policy = policyRepository.findPolicyByCard(cardRepository.findByNumber(card.getNumber()));</span>
+<span class="nc" id="L284">            return Objects.requireNonNullElse(policy, &quot;Não existe um seguro para esse cartão&quot;);</span>
+        }
+    }
+
+    public String pay(Card card, Double valuetopay){
+<span class="nc" id="L289">        Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L290">        Account account = accountRepository.findAccountByCard(card1);</span>
+
+        try{
+<span class="nc" id="L293">            Long id = card1.getId();</span>
+<span class="nc bnc" id="L294" title="All 4 branches missed.">            if(id == null || !Objects.equals(card.getPassword(), card1.getPassword())  ){</span>
+<span class="nc" id="L295">                return &quot;Pagamento inválido&quot;;</span>
+            }
+<span class="nc" id="L297">        } catch (NullPointerException e){</span>
+<span class="nc" id="L298">            return &quot;Pagamento inválido&quot;;</span>
+        }
+
+<span class="nc" id="L301">        Double value = valuetopay + (valuetopay * 0.01);</span>
+
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        if(card1.getDailyLimit() &lt; value){</span>
+<span class="nc" id="L304">            return &quot;Limite insuficiente&quot;;</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        } else if( !card1.getActive()){</span>
+<span class="nc" id="L306">            return &quot;Pagamento inválido&quot;;</span>
+        }
+
+<span class="nc" id="L309">        card1.setDailyLimit(card1.getDailyLimit() - value);</span>
+
+<span class="nc" id="L311">        account = accountService.discountBalance(account, value);</span>
+
+        try{
+<span class="nc bnc" id="L314" title="All 2 branches missed.">            if (account == null){</span>
+<span class="nc" id="L315">                return &quot;Saldo insuficiente&quot;;</span>
+            }
+<span class="nc" id="L317">        } catch (NullPointerException e){</span>
+<span class="nc" id="L318">            return &quot;Saldo insuficiente&quot;;</span>
+        }
+
+<span class="nc" id="L321">        extractService.insertCardPay(account, value);</span>
+
+<span class="nc" id="L323">        cardRepository.save(card1);</span>
+<span class="nc" id="L324">        accountRepository.save(account);</span>
+
+<span class="nc" id="L326">        return &quot;Pagamento concluído com sucesso!&quot;;</span>
+    }
+
+    public String creditPay(Card card, Double valuetopay){
+<span class="nc" id="L330">        Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L331">        Account account = accountRepository.findAccountByCard(card1);</span>
+        try{
+<span class="nc" id="L333">            Long id = card1.getId();</span>
+<span class="nc bnc" id="L334" title="All 4 branches missed.">            if(id == null || !Objects.equals(card.getPassword(), card1.getPassword())){</span>
+<span class="nc" id="L335">                return &quot;Pagamento inválido&quot;;</span>
+            }
+<span class="nc" id="L337">        } catch (NullPointerException e){</span>
+<span class="nc" id="L338">            return &quot;Pagamento inválido&quot;;</span>
+        }
+
+<span class="nc" id="L341">        Double value = valuetopay + (valuetopay * 0.01);</span>
+
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        if(card1.getMonthlyLimit() &lt; value + card1.getMonthlyBill()){</span>
+<span class="nc" id="L344">            return &quot;Limite insuficiente&quot;;</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">        } else if( !card1.getActive()){</span>
+<span class="nc" id="L346">            return &quot;Pagamento inválido&quot;;</span>
+        }
+
+<span class="nc" id="L349">        card1.setMonthlyBill(card1.getMonthlyBill() + value);</span>
+
+<span class="nc" id="L351">        extractService.insertCreditPay(account, value);</span>
+
+<span class="nc" id="L353">        cardRepository.save(card1);</span>
+<span class="nc" id="L354">        accountRepository.save(account);</span>
+
+<span class="nc" id="L356">        return &quot;Pagamento concluído com sucesso!&quot;;</span>
+    }
+
+    public String payBill(Card card) {
+<span class="nc" id="L360">        Card card1 = cardRepository.findByNumber(card.getNumber());</span>
+<span class="nc" id="L361">        Account account = accountRepository.findAccountByCard(card1);</span>
+
+        try{
+<span class="nc bnc" id="L364" title="All 2 branches missed.">            if(card1 == null){</span>
+<span class="nc" id="L365">                throw new CardNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">            } else if(account == null){</span>
+<span class="nc" id="L367">                throw new AccountNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+            }
+<span class="nc" id="L369">        } catch (NullPointerException e){</span>
+<span class="nc" id="L370">            throw new AccountNotFoundException(&quot;Não foi possível encontrar o cartão&quot;);</span>
+        }
+
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        if (account.getBalance() &lt; account.getCard().getMonthlyBill()){</span>
+<span class="nc" id="L374">            return &quot;Saldo insuficiente&quot;;</span>
+        }
+
+<span class="nc" id="L377">        account.setBalance(account.getBalance() - account.getCard().getMonthlyBill());</span>
+
+
+<span class="nc" id="L380">        extractService.insertMonthlyBill(account, account.getCard().getMonthlyBill());</span>
+
+<span class="nc" id="L382">        account.getCard().setMonthlyBill(0.0);</span>
+
+<span class="nc" id="L384">        cardRepository.save(account.getCard());</span>
+<span class="nc" id="L385">        accountRepository.save(account);</span>
+
+
+<span class="nc" id="L388">        return &quot;Fatura paga com sucesso&quot;;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

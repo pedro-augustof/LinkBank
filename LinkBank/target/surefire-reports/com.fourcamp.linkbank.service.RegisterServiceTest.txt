@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------------
+Test set: com.fourcamp.linkbank.service.RegisterServiceTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 4, Errors: 2, Skipped: 0, Time elapsed: 0.278 s <<< FAILURE! - in com.fourcamp.linkbank.service.RegisterServiceTest
+exceçãoCpfDiferente  Time elapsed: 0.174 s  <<< FAILURE!
+java.lang.AssertionError: unexpected exception type thrown; expected:<com.fourcamp.linkbank.exceptions.InvalidInputException> but was:<java.lang.NullPointerException>
+	at com.fourcamp.linkbank.service.RegisterServiceTest.exceçãoCpfDiferente(RegisterServiceTest.java:91)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.fourcamp.linkbank.model.Client.getRg()" because "existClient" is null
+	at com.fourcamp.linkbank.service.RegisterServiceTest.lambda$exceçãoCpfDiferente$3(RegisterServiceTest.java:92)
+	at com.fourcamp.linkbank.service.RegisterServiceTest.exceçãoCpfDiferente(RegisterServiceTest.java:91)
+
+registerPassAll  Time elapsed: 0.039 s  <<< ERROR!
+org.mockito.exceptions.misusing.MissingMethodInvocationException: 
+
+when() requires an argument which has to be 'a method call on a mock'.
+For example:
+    when(mock.getArticles()).thenReturn(articles);
+
+Also, this error might show up because:
+1. you stub either of: final/private/equals()/hashCode() methods.
+   Those methods *cannot* be stubbed/verified.
+   Mocking methods declared on non-public parent classes is not supported.
+2. inside when() you don't call method on mock but on some other object.
+
+	at com.fourcamp.linkbank.service.RegisterServiceTest.registerPassAll(RegisterServiceTest.java:77)
+
+senhaMenorQueOitoUpdate  Time elapsed: 0.064 s  <<< FAILURE!
+java.lang.AssertionError: expected com.fourcamp.linkbank.exceptions.InvalidInputException to be thrown, but nothing was thrown
+	at com.fourcamp.linkbank.service.RegisterServiceTest.senhaMenorQueOitoUpdate(RegisterServiceTest.java:83)
+
+updateCliente  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.fourcamp.linkbank.model.Client.getRg()" because "existClient" is null
+	at com.fourcamp.linkbank.service.RegisterServiceTest.updateCliente(RegisterServiceTest.java:100)
+
+SenhaMenorQueOito  Time elapsed: 0 s  <<< FAILURE!
+java.lang.AssertionError: unexpected exception type thrown; expected:<com.fourcamp.linkbank.exceptions.InvalidInputException> but was:<java.lang.NullPointerException>
+	at com.fourcamp.linkbank.service.RegisterServiceTest.SenhaMenorQueOito(RegisterServiceTest.java:68)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.fourcamp.linkbank.service.CardService.createCard(com.fourcamp.linkbank.model.Account)" because "this.cardService" is null
+	at com.fourcamp.linkbank.service.RegisterServiceTest.lambda$SenhaMenorQueOito$1(RegisterServiceTest.java:69)
+	at com.fourcamp.linkbank.service.RegisterServiceTest.SenhaMenorQueOito(RegisterServiceTest.java:68)
+
+DeveJogarExceçãoQuandoClienteComMesmoCpfJaExistir  Time elapsed: 0 s  <<< FAILURE!
+java.lang.AssertionError: unexpected exception type thrown; expected:<com.fourcamp.linkbank.exceptions.AlreadyExistsException> but was:<java.lang.NullPointerException>
+	at com.fourcamp.linkbank.service.RegisterServiceTest.DeveJogarExceçãoQuandoClienteComMesmoCpfJaExistir(RegisterServiceTest.java:59)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.fourcamp.linkbank.service.CardService.createCard(com.fourcamp.linkbank.model.Account)" because "this.cardService" is null
+	at com.fourcamp.linkbank.service.RegisterServiceTest.lambda$DeveJogarExceçãoQuandoClienteComMesmoCpfJaExistir$0(RegisterServiceTest.java:60)
+	at com.fourcamp.linkbank.service.RegisterServiceTest.DeveJogarExceçãoQuandoClienteComMesmoCpfJaExistir(RegisterServiceTest.java:59)
+
